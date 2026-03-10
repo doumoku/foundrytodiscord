@@ -5,8 +5,8 @@
     "description": "Foundry VTTのチャットメッセージをDiscordに送信するモジュールです。",
     "ready": "Ready.",
     "server": {
-      "stateOffline": "foundrytodiscord | サーバーステートがOFFLINEになりました。",
-      "stateOfflineMessage": "サーバーステートがOFFLINEになりました。"
+      "stateOffline": "foundrytodiscord | サーバーステータスがOFFLINEになりました。",
+      "stateOfflineMessage": "サーバーステータスがOFFLINEになりました。"
     },
     "error": {
       "editingEmbed": "埋め込み編集時エラー: {status} {statusText}",
@@ -46,7 +46,7 @@
     "modulePrefix": "foundrytodiscord",
     "logs": {
       "inviteURLNotSet": "招待URLが設定されていません！画像は送信されませんでした。",
-      "serverStateOffline": "サーバーステートがOFFLINEに設定されました",
+      "serverStateOffline": "サーバーステータスがOFFLINEに設定されました",
       "errorEditingEmbed": "埋め込み編集エラー: {status} {statusText}",
       "systemDetected": "ゲームシステム「{systemId}」が検出されました。",
       "systemNotSupported": "ゲームシステム「{systemId}」は完全にサポートされていません。「汎用」モードを使用します。",
@@ -84,38 +84,38 @@
     },
     "statusMonitor": {
       "setupTitle": "サーバーステータス設定手順",
-      "setupDescription": "**重要**: A limitation of this module is that it can *only* detect your world as online if a Gamemaster account is online. A command 'ftd serveroff' is also needed to set this message to OFFLINE.\n\n**Step 1:** Pin this message so that everyone can find it easily on your channel.\n**Step 2**: Right click on this message and click on **\"Copy Message ID\"**. Your Discord app must have **User Settings > Advanced > Developer Mode** turned **ON** for this to appear.\n**Step 3**: Go to **Configure Settings > Foundry to Discord > Server Status Message ID** and **paste** the copied ID from Step 2. Afterwards, save your settings, and it should prompt your world to restart.\n**Step 4**: Look at this message again after your world restarts. It should appear as the correct server status message.",
+      "setupDescription": "**重要**: このモジュールの制限として、ゲームマスターのアカウントがオンライン時*のみ*、ワールドがオンライン状態だと検知できます。また、このメッセージをOFFLINEにするにはコマンド'ftd serveroff'が必要です。\n\n**手順 1:** このメッセージをピン止めし、チャンネル内の誰もが見れるようにします。\n**手順 2**: このメッセージを右クリックし、**\"メッセージIDをコピー\"**をクリックします。この選択肢が表示されるには、Discordの**ユーザー設定 > 詳細設定 > 開発者モード** が **ON** である必要があります。\n**手順 3**: **設定 > Foundry to Discord > サーバーステータスメッセージID**に行き、手順2でコピーしたIDを**貼り付け**ます。その後変更を保存すると、ワールドが再起動されるはずです。\n**手順 4**: ワールドが再起動後にこのメッセージを再度ご確認ください。正しいサーバーステータスが表示されているはずです。",
       "serverStatusTitle": "サーバーステータス: {worldId}",
       "onlineStatus": "## ONLINE",
       "offlineStatus": "## OFFLINE",
       "inviteLink": "**招待リンク: **{inviteURL}",
       "activeUsers": "__**{activeUsers}/{totalUsers} アクティブユーザー**__",
-      "offlineFooter": "Have a GM type \"ftd serveroff\" in Foundry to set your server status to OFFLINE. This will persist until the next time a GM logs in."
+      "offlineFooter": "Foundry上でGMに\"ftd serveroff\"と入力してもらえればサーバーステータスがOFFLINEに切り替わります。これは次にGMがログインするまで継続します。"
     },
     "settings": {
       "inviteURL": {
         "name": "ゲーム招待URL",
-        "hint": "This should be the internet invite URL for your game session. Make sure the domain is public! To test if your URL works, go to <https://yourinviteurl.example>/modules/foundrytodiscord/src/images/defaultavatar.png (excluding <>, of course). If you visit the link where this image is hosted, it should appear as the default FoundryVTT icon!"
+        "hint": "ゲームセッションのための招待用リンク（URL）を設定してください。ドメインが公開されていることを事前にご確認くださいね！URLが正しいのか確認するためには、<https://あなたのURL.例>/modules/foundrytodiscord/src/images/defaultavatar.png を開いてみてください(当然ながら<>は除いてください)。正常なら、デフォルトのFoundryVTTアイコンが表示されるはずです！"
       },
       "webHookURL": {
         "name": "ウェブフックURL",
-        "hint": "This should be the Webhook's URL from the discord channel you want to send chat messages to. Leave it blank to have Foundry to Discord ignore regular chat messages."
+        "hint": "チャットメッセージを送る宛先であるdiscordチャンネルのウェブフックURLを設定してください。空欄の場合、Foundry to Discordは通常のチャットメッセージを無視します。"
       },
       "rollWebHookURL": {
         "name": "ロール用ウェブフックURL",
-        "hint": "This is the webhook for wherever you want rolls to appear in discord. Leave it blank to have Foundry to Discord ignore rolls. You can set this as the same webhook URL as above."
+        "hint": "ダイスのロール結果を送る宛先であるウェブフックURLを設定してください。空欄の場合、Foundry to Discordはロール結果を無視します。上記と同じウェブフックURLを使用できます。"
       },
       "serverStatusMessage": {
         "name": "サーバーステータスメッセージを有効化",
-        "hint": "Toggle this on to enable your world to detect when your world is online. When the server is restarted, given that you have set up your Webhook link and invite URL, it will send instructions on how to set this up. Come back to this setting page after this setting has been turned on."
+        "hint": "チェックをつけるとこのワールドがオンラインかどうかを検知できるようになります。サーバーが再起動された時、ウェブフックURLと招待リンクを設定してある前提で、初期設定の手順をそちらに送信します。これが有効化された後に、この設定画面に戻ってきてください。"
       },
       "messageID": {
-        "name": "Server Status Message ID",
-        "hint": "The message ID of the message that will be edited when the module detects that your world is online or offline. Follow the instructions sent to the channel where you have set up your webhook. Leaving this blank will send a new instruction message to your webhook after a restart."
+        "name": "サーバーステータスメッセージID",
+        "hint": "このワールドがオンライン・オフライン状態を検知するためにモジュールが編集する、discordのメッセージIDです。ウェブフックURLを設定したチャンネルに送信された手順を行ってください。空欄の場合、再起動後にウェブフックURL先へ新しく手順メッセージを送信します。"
       },
       "showInvite": {
         "name": "招待リンクを表示",
-        "hint": "有効の場合、サーバーステータスメッセージにこのワールドの公開招待リンクを追記します。"
+        "hint": "チェックをつけると、サーバーステータスメッセージにこのワールドの公開招待リンクを追記します。"
       },
       "userMonitor": {
         "name": "ユーザーのログイン・ログアウトを監視",
@@ -123,18 +123,18 @@
       },
       "prettierEmojis": {
         "name": "外部絵文字を使用",
-        "hint": "このMODに他のDiscordサーバーからの外部絵文字の使用許可を与え、体験を良くしましょう！@everyone権限でチャンネル/サーバーに外部絵文字が有効になっていることを確認してください。"
+        "hint": "このMODに他のDiscordサーバーからの外部絵文字の使用許可を与え、ユーザー体験を向上させましょう！@everyone権限でチャンネル/サーバーに外部絵文字が有効になっていることを確認してください。"
       },
       "ignoreWhispers": {
         "name": "秘匿・プライベートロールを無視",
-        "hint": "Turning this off will allow Foundry to Discord to detect whispers and private rolls, and send them to your webhook like any other message."
+        "hint": "チェックを外すと、Foundry to Discordは秘匿とプライベートロールを検知できるようになり、他のメッセージのようにウェブフックへ送信します。"
       },
       "allowNoGM": {
         "name": "GM不在でもチャットミラーリングを許可",
-        "hint": "Foundry to Discord will mirror messages even when a GM is not in the world."
+        "hint": "チェックしてある場合、Foundry to DiscordはGMがワールドに不在でもメッセージをミラーリングします。"
       },
       "allowPlayerSend": {
-        "name": "Enable \"ディスコードに送信\" for everyone",
+        "name": "『ディスコードに送信』を全員に有効化",
         "hint": "This will allow players to use the \"Send to Discord\" context menu option on chat messages, as well as the \"Send to Player Notes\" context menu option, if you have the \"Player Notes Webhook URL\" filled in."
       },
       "notesWebHookURL": {
@@ -143,11 +143,11 @@
       },
       "showDescription": {
         "name": "チャットカードの説明を表示",
-        "hint": "無効化するとchat cards descriptions are no longer sent to discord, which could be useful if you don't want to log long spell descriptions, for example."
+        "hint": "チェックを外すとchat cards descriptions are no longer sent to discord, which could be useful if you don't want to log long spell descriptions, for example."
       },
       "sendEmbeds": {
         "name": "チャットカード埋め込みを表示",
-        "hint": "無効化するとchat cards are no longer sent to discord. (Does not affect chat cards with rolls attached to them, such as with midi-qol)"
+        "hint": "チェックを外すとchat cards are no longer sent to discord. (Does not affect chat cards with rolls attached to them, such as with midi-qol)"
       },
       "showFormula": {
         "name": "可能な限りロール計算式を表示",
@@ -155,7 +155,7 @@
       },
       "enablePolyglot": {
         "name": "(Polyglot) 言語チェックを有効化",
-        "hint": "無効にするとPolyglotとFoundry to Discordの連携を無効化されます。"
+        "hint": "チェックを外すとPolyglotとFoundry to Discordの連携を無効化されます。"
       },
       "includeOnly": {
         "name": "(Polyglot) はこれらの言語だけ理解できます:",
@@ -166,7 +166,7 @@
         "hint": "Show the language of the message if the message is not in common language."
       },
       "polyglotShowMode": {
-        "name": "(Polyglot) Show obfuscated message, original, or both",
+        "name": "(Polyglot) 曖昧化されたメッセージ、元のメッセージ、または両方を表示",
         "hint": "Omniglot language messages will not be obfuscated",
         "choices": {
           "showOriginal": "Obfuscate message only if none understand",
@@ -175,19 +175,19 @@
         }
       },
       "enableAnon": {
-        "name": "(anonymous) Use Replacement Names",
-        "hint": "Use Anonymous in Discord messages, such as replacing names, removing them in descriptions and footers. Do not turn this off if you want to limit metagame information as usual."
+        "name": "(Anonymous) 代替の名前を使用",
+        "hint": "Anonymous MODをDiscordのメッセージで使用します。such as replacing names, removing them in descriptions and footers. Do not turn this off if you want to limit metagame information as usual."
       },
       "forceShowNames": {
         "name": "強制的にDiscordへ名前表示",
-        "hint": "Turn this on to show token names on Discord regardless of token name visibility. The default behavior is to show only token names if the name on the token is visible to players. This overrides Anonymous."
+        "hint": "チェックをつけると、show token names on Discord regardless of token name visibility. The default behavior is to show only token names if the name on the token is visible to players. This overrides Anonymous."
       },
       "forceShowRolls": {
-        "name": "Force show GM roll results, formulas, and breakdowns",
-        "hint": "The module will no longer attempt to hide all GM roll details. \"Show roll formulas where applicable\" still needs to be on to show formulas and roll breakdowns. This only affects public rolls, and no other metagame info."
+        "name": "GMロール結果、ダイス計算式、詳細を強制表示",
+        "hint": "チェックをつけると、このモジュールはGMロールの詳細を隠さなくなります。 \"Show roll formulas where applicable\" still needs to be on to show formulas and roll breakdowns. This only affects public rolls, and no other metagame info."
       },
       "autoUuidEmbed": {
-        "name": "Auto-embed UUID Link Messages",
+        "name": "UUIDリンクメッセージの自動埋め込み",
         "hint": "Turn this on to automatically append an embed for an item description or journal if a message only contains UUID links, up to 10 item links and/or journal pages. If you send a ridiculously long journal, deleting the message containing the UUID link on Foundry will also remove the long embeds on Discord."
       },
       "showAuthor": {
@@ -196,11 +196,11 @@
       },
       "disableDeletions": {
         "name": "メッセージ削除無効化",
-        "hint": "If this is turned ON, deleted messages in Foundry won't be synced with your Discord webhook."
+        "hint": "チェックをつけると、Foundryで削除されたメッセージはDiscord webhookと同期されません。"
       },
       "disableMessages": {
         "name": "チャットミラーリングを無効化",
-        "hint": "新規チャット・メッセージの検知を無効にします。Foundry to DiscordをAPIまたはサーバーステータスメッセージのために使用したい場合はこれを有効化しても良いでしょう。"
+        "hint": "チェックをつけると、新規チャット・メッセージの検知を無効にします。Foundry to DiscordをAPIまたはサーバーステータスメッセージのために使用したい場合はこれを有効化しても良いでしょう。"
       }
     }
   }
