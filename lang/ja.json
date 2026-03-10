@@ -134,24 +134,24 @@
         "hint": "チェックしてある場合、Foundry to DiscordはGMがワールドに不在でもメッセージをミラーリングします。"
       },
       "allowPlayerSend": {
-        "name": "『ディスコードに送信』を全員に有効化",
-        "hint": "This will allow players to use the \"Send to Discord\" context menu option on chat messages, as well as the \"Send to Player Notes\" context menu option, if you have the \"Player Notes Webhook URL\" filled in."
+        "name": "『Discordに送信』を全員に有効化",
+        "hint": "チェックしてある場合、プレイヤーはチャット欄のコンテキスト（右クリック）メニューから\"Discordに送信\"が選べるようになります。\"プレイヤーメモ用ウェブフックURL\"が記入済みの場合\"プレイヤーメモに送信\"も選べるようになります。"
       },
       "notesWebHookURL": {
-        "name": "プレイヤー・ノート用ウェブフックURL",
-        "hint": "これはプレイヤーのメモ用のウェブフックThis is the webhook for player notes, which is used when \"Send _ to Player Notes\" is clicked. (option does not appear in windows or context menus if this is not filled in)"
+        "name": "プレイヤーメモ用ウェブフックURL",
+        "hint": "これはプレイヤーのメモ用のウェブフックです。\" _ をプレイヤーメモに送信\"がクリックされた時に使用されます。 (この選択肢はURLが記載されていないとウィンドウや右クリックメニューに表示されません)"
       },
       "showDescription": {
         "name": "チャットカードの説明を表示",
-        "hint": "チェックを外すとchat cards descriptions are no longer sent to discord, which could be useful if you don't want to log long spell descriptions, for example."
+        "hint": "チェックを外すとチャットカードの説明文がDiscordへ送信されなくなります。例えば、長い呪文の説明文をログ取得したくない時などに便利です。"
       },
       "sendEmbeds": {
         "name": "チャットカード埋め込みを表示",
-        "hint": "チェックを外すとchat cards are no longer sent to discord. (Does not affect chat cards with rolls attached to them, such as with midi-qol)"
+        "hint": "チェックを外すと、チャットカードの説明文がDiscordへ送信されなくなります。 (そのチャットカードに付随する、midi-qolなどのダイスのロール結果は引き続き送信されます)"
       },
       "showFormula": {
         "name": "可能な限りロール計算式を表示",
-        "hint": "Enable roll formulas to be shown in roll embeds where applicable. This does not override the general rule of roll formula visibility, i.e. most rolls from the GM are generally still hidden if this is turned on, and GM roll formulas are only shown in midi-qol when GM roll detail hiding is set to \"None\"."
+        "hint": "チェックをつけると、埋め込みに可能な限りダイスロールの計算式を表記します。この設定はロール計算式の可視性に関する基礎ルールより優先されません。例えば、これにチェックがついていてもGMのロールの大半は隠されます。そしてGMロールの計算式はGMロールの詳細を秘匿設定が\"なし\"の時のみ、midi-qolで表記されます。"
       },
       "enablePolyglot": {
         "name": "(Polyglot) 言語チェックを有効化",
@@ -159,40 +159,40 @@
       },
       "includeOnly": {
         "name": "(Polyglot) はこれらの言語だけ理解できます:",
-        "hint": "A comma-separated list of languages that you wish to ONLY be understood to be sent in Discord. Leave blank for normal Polyglot behavior."
+        "hint": "Discordへ送る際、カンマ「,」で区切られた言語リストにある言語のメッセージのみ理解するようになります。空欄にするとデフォルトのPolyglot挙動を使用します。"
       },
       "includeLanguage": {
         "name": "(Polyglot) 言語をメッセージに表示",
-        "hint": "Show the language of the message if the message is not in common language."
+        "hint": "メッセージが共通語でない場合、言語を表記します。"
       },
       "polyglotShowMode": {
         "name": "(Polyglot) 曖昧化されたメッセージ、元のメッセージ、または両方を表示",
-        "hint": "Omniglot language messages will not be obfuscated",
+        "hint": "手書き言語のメッセージは曖昧化されません",
         "choices": {
-          "showOriginal": "Obfuscate message only if none understand",
-          "showIfOne": "Obfuscate, but show original in spoilers if one understands",
-          "showAll": "Obfuscate, but show original in spoilers"
+          "showOriginal": "誰も分からないメッセージのみ曖昧化する",
+          "showIfOne": "曖昧化するが、誰かが理解できるならネタバレに原文を表示",
+          "showAll": "曖昧化するが、ネタバレに原文を表示"
         }
       },
       "enableAnon": {
         "name": "(Anonymous) 代替の名前を使用",
-        "hint": "Anonymous MODをDiscordのメッセージで使用します。such as replacing names, removing them in descriptions and footers. Do not turn this off if you want to limit metagame information as usual."
+        "hint": "Anonymous MODをDiscordのメッセージで使用し、説明文やフッターにある名前を代替にしたり、取り除きます。通常状態でメタ情報を限定したい場合はチェックを外さないでください。"
       },
       "forceShowNames": {
         "name": "強制的にDiscordへ名前表示",
-        "hint": "チェックをつけると、show token names on Discord regardless of token name visibility. The default behavior is to show only token names if the name on the token is visible to players. This overrides Anonymous."
+        "hint": "チェックをつけると、コマ名の表示形式に関わらずうDiscord上のメッセージにコマ名を強制表記します。デフォルトの挙動ではプレイヤーが見れる時のみコマ名が表記されます。この設定はAnonymousより優先されます。"
       },
       "forceShowRolls": {
         "name": "GMロール結果、ダイス計算式、詳細を強制表示",
-        "hint": "チェックをつけると、このモジュールはGMロールの詳細を隠さなくなります。 \"Show roll formulas where applicable\" still needs to be on to show formulas and roll breakdowns. This only affects public rolls, and no other metagame info."
+        "hint": "チェックをつけると、このモジュールはGMロールの詳細を隠さなくなります。計算式とロール結果を表記するには\"可能な限りロール計算式を表示\"にもチェックが必要です。これは公開ロールにのみ影響し、他のメタ情報は非表示のままです。"
       },
       "autoUuidEmbed": {
         "name": "UUIDリンクメッセージの自動埋め込み",
-        "hint": "Turn this on to automatically append an embed for an item description or journal if a message only contains UUID links, up to 10 item links and/or journal pages. If you send a ridiculously long journal, deleting the message containing the UUID link on Foundry will also remove the long embeds on Discord."
+        "hint": "チェックをつけると、アイテムの説明か資料メッセージが最大で10件のアイテムリンクまたは資料ページまでの、UUIDリンクだけが記載されたメッセージを自動的に埋め込み結合します。非常に長い資料を送信する場合、Foundry上でUUIDリンクを含んだメッセージを削除すると、Discord側の長い埋め込みも取り除かれます。"
       },
       "showAuthor": {
         "name": "埋め込みにユーザー名を表示",
-        "hint": "メッセージ送信者のFoundryユーザー名とアバター（存在していれば）を埋め込みに含めます。"
+        "hint": "チェックをつけると、メッセージ送信者のFoundryユーザー名とアバター（存在していれば）を埋め込みに含めます。"
       },
       "disableDeletions": {
         "name": "メッセージ削除無効化",
