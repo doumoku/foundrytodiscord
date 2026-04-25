@@ -114,9 +114,17 @@ export class MessageParserProjectFU extends MessageParser {
 
         const parseFieldsFromCheckElement = (attrCheckElement) => {
             let fields = [];
-            for (const attrPart of attrCheckElement.querySelectorAll('div')) {
-                const title = attrPart.querySelector('label.title').textContent.trim();
-                const value = `${dieIcon()}__**\`${attrPart.querySelector('label.detail').textContent.trim()}\`**__`;
+            for (const attrPart of Array.from(attrCheckElement.children).filter(el => el.tagName === 'DIV')) {
+                const titleElement = attrPart.querySelector('span.fu-icon__badge-label');
+                let title = "\u200b";
+                if(titleElement){
+                    title = titleElement.textContent.trim();
+                }
+                const dieElement = attrPart.querySelector('label.detail');
+                let value = "\u200b";
+                if(dieElement){
+                    value = `${dieIcon()}__**\`${dieElement.textContent.trim()}\`**__`;
+                }
                 fields.push({ name: title, value: value, inline: true })
             }
             return fields;
