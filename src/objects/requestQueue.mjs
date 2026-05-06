@@ -167,7 +167,7 @@ export class DiscordRequestQueue {
                 this.#progressQueue(retry, ignoreRescuePartyFor);
             }
             else {
-                throw new Error(response);
+                throw new Error(await response.json());
             }
         } catch (response) {
             console.error(localizeWithPrefix("foundrytodiscord.logs.fetchError", { status: response.status }));
