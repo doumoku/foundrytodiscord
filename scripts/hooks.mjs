@@ -21,15 +21,8 @@ export async function initOtherHooks() {
     });
     let imagePopoutHookString = "";
     let chatLogHookString = "";
-    // Removed in v14
-    if (game.version.startsWith('13')) {
-        imagePopoutHookString = "getHeaderControlsImagePopout";
-        chatLogHookString = "getChatMessageContextOptions";
-    }
-    else {
-        imagePopoutHookString = "getImagePopoutHeaderButtons";
-        chatLogHookString = "getChatLogEntryContext";
-    }
+    imagePopoutHookString = "getHeaderControlsImagePopout";
+    chatLogHookString = "getChatMessageContextOptions";
 
     Hooks.on(imagePopoutHookString, (app, controls) => {
         controls.unshift(
