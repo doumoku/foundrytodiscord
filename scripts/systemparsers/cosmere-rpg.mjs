@@ -1,5 +1,5 @@
 import { MessageParser } from './generic.mjs';
-import { actionGlyphEmojis, systemIcons } from '../helpers/emojis/cosmere-rpg.mjs';
+import { actionGlyphEmojis, systemIcons, getPlotDieEmoji } from '../helpers/emojis/cosmere-rpg.mjs';
 import { swapOrNot, dieIcon, getDieEmoji } from '../helpers/emojis/global.mjs';
 import { getThisModuleSetting } from '../helpers/modulesettings.mjs';
 import { parse2DTable } from '../helpers/parser/tables.mjs';
@@ -116,6 +116,61 @@ export class MessageParserCosmereRPG extends MessageParser {
                 return [];
         }
     }
+
+    _createRollEmbed(message) {
+        let desc = ""
+        let title = ""
+        if (message.flavor && message.flavor.length > 0) {
+            title = message.flavor;
+        }
+        else {
+            const elements = document.createElement('div');
+            elements.innerHTML = message.content;
+            const flavor = elements.querySelector(".flavor-text");
+            if (flavor) {
+                title = flavor.textContent;
+            }
+            else {
+                title = message.alias + "\'s Rolls";
+            }
+        }
+        const speakerActor = game.actors.get(message.speaker.actor);
+        const user = message.author;
+        message.rolls.forEach(roll => {
+            if (getThisModuleSetting('showFormula') && (getThisModuleSetting('forceShowRolls') || (speakerActor?.hasPlayerOwner || (!speakerActor && !user.isGM)))) {
+                desc += `${dieIcon()}**\`${roll.formula}\`**\n`
+                desc += `**${dieIcon()}Result: __${roll.total}__**`;
+                let plotDice = "";
+                if (roll.terms) {
+                    roll.terms.forEach(term => {
+                        if (term.isPlotDie) {
+                            term.results.forEach(result => {
+                                if (result.active) {
+                                    plotDice += `${getPlotDieEmoji(term.faces, result.result) }`;
+                                }
+                            });
+                        }
+                    });
+                }
+                if (plotDice) {
+                    if (!getThisModuleSetting('prettierEmojis')) {
+                        plotDice = plotDice.slice(0, -1);
+                    }
+                    desc += `(${plotDice.trim()})`;
+                }
+                let rollBreakdown = this._generateRollBreakdown(roll);
+                if (rollBreakdown) {
+                    desc += `||(${rollBreakdown})||`;
+                }
+                desc += "\n\n"
+            }
+            else {
+                desc += `**${dieIcon()}Result: __${roll.total}__**\n\n`;
+            }
+        });
+        return [{ title: title, description: desc.trim() }];
+    }
+
 
     async _getCosmereRPGMergedRollCard(message) {
         let embeds = [];
