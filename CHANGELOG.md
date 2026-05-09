@@ -1,3 +1,10 @@
+# 4.0.0
+
+- Initial fixes and support for Foundry v14.
+- (cosmere-rpg) Added Plot Die (dp) to roll embeds.
+- Added support for Starfinder Second Edition.
+- Minor fixes.
+
 # 3.2.3
 
 - (cosmere-rpg) Fix emojis for opportunities and complications.
