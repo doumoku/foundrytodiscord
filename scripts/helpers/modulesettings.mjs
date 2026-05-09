@@ -364,31 +364,34 @@ export function getSystemParser() {
     /* all message parsers MUST return a set of request params. The module queues each request param to be sent
     *  one by one to Discord to avoid rate limits.
     */
+    let systemCompatible = true;
     switch (SYSTEM_ID) {
         case "pf2e":
-            console.log(localizeWithPrefix("foundrytodiscord.logs.systemDetected", { systemId: "pf2e" }));
+        case "sf2e":
             return new MessageParserPF2e();
             break;
         case "dnd5e":
-            console.log(localizeWithPrefix("foundrytodiscord.logs.systemDetected", { systemId: "dnd5e" }));
             return new MessageParserDnD5e();
             break;
         case "pf1":
-            console.log(localizeWithPrefix("foundrytodiscord.logs.systemDetected", { systemId: "pf1" }));
             return new MessageParserPF1();
             break;
         case "projectfu":
-            console.log(localizeWithPrefix("foundrytodiscord.logs.systemDetected", { systemId: "projectfu" }));
             return new MessageParserProjectFU();
             break;
         case "cosmere-rpg":
-            console.log(localizeWithPrefix("foundrytodiscord.logs.systemDetected", { systemId: "cosmere-rpg" }));
             return new MessageParserCosmereRPG();
             break;
         default:
-            console.log(localizeWithPrefix("foundrytodiscord.logs.systemNotSupported", { systemId: SYSTEM_ID }));
+            systemCompatible = false;
             return new MessageParser();
             break;
+    }
+    if (systemCompatible) {
+        console.log(localizeWithPrefix("foundrytodiscord.logs.systemDetected", { systemId: SYSTEM_ID }));
+    }
+    else {
+        console.log(localizeWithPrefix("foundrytodiscord.logs.systemNotSupported", { systemId: SYSTEM_ID }));
     }
 }
 
