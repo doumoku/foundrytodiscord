@@ -6,11 +6,50 @@ import { MessageParser } from './generic.mjs';
 
 const DamageRoll = CONFIG.Dice.rolls.find(r => r.name === "DamageRoll");
 
+const SYSTEM_ID = (game && game.system && game.system.id) ? game.system.id : 'pf2e';
+const SHORT_SYS = /*SYSTEM_ID.startsWith('sf2') ? 'sf2' : 'pf2'*/ 'pf2'; // SF2E uses pf2 still.
+
+function getPath(key) {
+    if (key === 'polyglotLanguages') return 'system.details.languages.value';
+}
+
+function getSelector(key) {
+    switch (key) {
+        case 'inlineCheck':
+            return `.inline-check, span[data-${SHORT_SYS}-check]`;
+        case 'actionGlyph':
+            return '.action-glyph';
+        case 'templateButton':
+            return `span[data-${SHORT_SYS}-effect-area], a[data-effect-area]`;
+        case 'statusEffects':
+            return '.statuseffect-rules';
+        case 'rerollDiscard':
+            return `.${SYSTEM_ID}-reroll-discard .dice-total, .reroll-discard .dice-total`;
+        default:
+            return '';
+    }
+}
+
+function getAttributeName(key) {
+    if (key === 'templateAttribute') return `data-${SHORT_SYS}-effect-area`;
+}
+
+function getSystemFlag(message, path) {
+    const parts = path.split('.');
+    let obj = message.flags?.[SYSTEM_ID];
+    if (!obj) return undefined;
+    for (const p of parts) {
+        obj = obj?.[p];
+        if (obj === undefined) return undefined;
+    }
+    return obj;
+}
+
 export class MessageParserPF2e extends MessageParser {
 
     constructor() {
         super();
-        this._polyglotPath = "system.details.languages.value";
+        this._polyglotPath = getPath('polyglotLanguages');
         this._genericRolls = false;
     }
 
@@ -21,8 +60,8 @@ export class MessageParserPF2e extends MessageParser {
         if (htmldoc.hasChildNodes()) {
             // Format various elements
             this._removeElementsBySelector('[data-visibility="gm"], [data-visibility="owner"],[data-visibility="none"]', htmldoc);
-            this._formatTextBySelector('.inline-check, span[data-pf2-check]', text => `${dieIcon(20)}\`${text}\``, htmldoc);
-            this._formatTextBySelector('.action-glyph', text => `${text.replace(/1|2|3|4|5|a|d|t|f|r/g, match => swapOrNot(match.toLowerCase(), actionGlyphEmojis[match.toLowerCase()]))}`, htmldoc);
+            this._formatTextBySelector(getSelector('inlineCheck'), text => `${dieIcon(20)}\`${text}\``, htmldoc);
+            this._formatTextBySelector(getSelector('actionGlyph'), text => `${text.replace(/1|2|3|4|5|a|d|t|f|r/g, match => swapOrNot(match.toLowerCase(), actionGlyphEmojis[match.toLowerCase()]))}`, htmldoc);
             this._formatTextBySelector('.statements.reverted', text => `~~${text}~~`, htmldoc);
             reformattedText = htmldoc.innerHTML;
             htmldoc.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(header => {
@@ -32,11 +71,16 @@ export class MessageParserPF2e extends MessageParser {
                     }
                 });
             });
-            const templateButtons = htmldoc.querySelectorAll('span[data-pf2-effect-area]');
+            htmldoc.querySelectorAll("span[data-pf2-glyph]").forEach(inlineAction => {
+                const glyphType = inlineAction.getAttribute("data-pf2-glyph");
+                inlineAction.textContent = `${actionGlyphEmojis[glyphType.toLowerCase()]}\`${inlineAction.textContent}\``;
+            });
+            const templateButtons = htmldoc.querySelectorAll(getSelector('templateButton'));
             if (templateButtons.length > 0) {
+                const templateAttr = getAttributeName('templateAttribute');
                 templateButtons.forEach(template => {
-                    const type = template.getAttribute('data-pf2-effect-area');
-                    let tempTemplate = ""
+                    const type = template.getAttribute(templateAttr) || template.getAttribute('data-type') || template.getAttribute('data-effect-area');
+                    let tempTemplate = "";
                     if (templateEmojis.hasOwnProperty(type)) {
                         tempTemplate += templateEmojis[type];
                     }
@@ -45,23 +89,6 @@ export class MessageParserPF2e extends MessageParser {
                 })
             }
             reformattedText = htmldoc.innerHTML;
-
-            //Old format for status effects. Kept this in for now, but will be removed later on.
-            const statuseffectlist = htmldoc.querySelectorAll('.statuseffect-rules');
-            if (statuseffectlist.length !== 0) {
-                let statfx = '';
-                statuseffectlist.forEach(effect => {
-                    statfx += effect.innerHTML.replace(/<p>.*?<\/p>/g, '') + '\n';
-                });
-                const tempdivs = document.createElement('div');
-                tempdivs.innerHTML = reformattedText;
-                const targetdiv = tempdivs.querySelector('.dice-total.statuseffect-message');
-                if (targetdiv) {
-                    targetdiv.innerHTML = statfx;
-                }
-                this._removeElementsBySelector('.dice-total.statuseffect-message ul', tempdivs);
-                reformattedText = tempdivs.innerHTML;
-            }
         }
 
         return reformattedText;
@@ -110,21 +137,22 @@ export class MessageParserPF2e extends MessageParser {
                 descVisible = false;
             }
         }
-        if (descVisible) {
-            if (message.flags?.pf2e?.context?.item) {
-                const item = game.actors.get(message.speaker.actor).items.get(message.flags.pf2e.context.item);
-                const itemDesc = item.description;
-                const actionCardDesc = div.querySelector(".description, .action-content");
-                actionCardDesc.outerHTML = itemDesc;
-                desc += await toHTML(div.innerHTML, this._generateEnrichmentOptionsUsingOrigin(item));
-            }
-            else {
-                const actionDesc = div.querySelector(".description, .action-content");
-                if (actionDesc) {
-                    desc += actionDesc.innerHTML;
+            if (descVisible) {
+                const originItemId = getSystemFlag(message, 'context.item');
+                if (originItemId) {
+                    const item = game.actors.get(message.speaker.actor).items.get(originItemId);
+                    const itemDesc = item.description;
+                    const actionCardDesc = div.querySelector(".description, .action-content");
+                    actionCardDesc.outerHTML = itemDesc;
+                    desc += await toHTML(div.innerHTML, this._generateEnrichmentOptionsUsingOrigin(item));
+                }
+                else {
+                    const actionDesc = div.querySelector(".description, .action-content");
+                    if (actionDesc) {
+                        desc += actionDesc.innerHTML;
+                    }
                 }
             }
-        }
         return [{ title: title, description: desc, footer: { text: this._getCardFooter(div.innerHTML) } }];
     }
 
@@ -184,7 +212,7 @@ export class MessageParserPF2e extends MessageParser {
         }
         if (traits.trim() !== "") {
             return `\`${traits.trim()}\`\n`;
-        }        
+        }
         else {
             return "";
         }
@@ -193,7 +221,7 @@ export class MessageParserPF2e extends MessageParser {
     _getDiscardedRoll(message) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(message.content, "text/html");
-        const rerollDiscardDiv = doc.querySelector(".pf2e-reroll-discard .dice-total, .reroll-discard .dice-total");
+        const rerollDiscardDiv = doc.querySelector(getSelector('rerollDiscard'));
         return rerollDiscardDiv.textContent;
     }
 
@@ -374,7 +402,7 @@ export class MessageParserPF2e extends MessageParser {
                 let targetString = "";
                 targets.forEach(target => {
                     const targetToken = fromUuidSync(target);
-                    if(!targetToken){
+                    if (!targetToken) {
                         return;
                     }
                     const targetActor = targetToken.actor;
@@ -438,9 +466,10 @@ export class MessageParserPF2e extends MessageParser {
                 }
             }
             else {
-                if (message.flags?.pf2e?.context?.target?.token) {
+                const targetTokenUuid = getSystemFlag(message, 'context.target.token');
+                if (targetTokenUuid) {
                     desc += `**${swapOrNot(":dart:", targetEmoji)}Target: **`;
-                    const targetToken = fromUuidSync(message.flags.pf2e.context.target.token);
+                    const targetToken = fromUuidSync(targetTokenUuid);
                     if (targetToken) {
                         if (anonEnabled()) {
                             if (!anon.playersSeeName(targetToken.actor)) {
@@ -485,11 +514,12 @@ export class MessageParserPF2e extends MessageParser {
                         }
                     }
                     else {
+                        const systemOutcome = getSystemFlag(message, 'context.outcome');
                         if (this._parseDegree(roll.options?.degreeOfSuccess)) {
                             desc += `\`(${this._parseDegree(roll.options.degreeOfSuccess)})\``;
                         }
-                        else if (this._parseDegree(message.flags.pf2e?.context?.outcome)) {
-                            desc += `\`(${this._parseDegree(message.flags.pf2e.context.outcome)})\``;
+                        else if (this._parseDegree(systemOutcome)) {
+                            desc += `\`(${this._parseDegree(systemOutcome)})\``;
                         }
                         if (rollBreakdown && showDetails) {
                             desc += `||(${rollBreakdown})||`;
@@ -512,8 +542,9 @@ export class MessageParserPF2e extends MessageParser {
                         desc += ` (${swapOrNot("Nat 1", getDieEmoji(20, 1))})`;
                     }
                 }
-                if (this._parseDegree(message.flags.pf2e.context.outcome)) {
-                    desc += `\`(${this._parseDegree(message.flags.pf2e.context.outcome)})\``;
+                const rerollOutcome = getSystemFlag(message, 'context.outcome');
+                if (this._parseDegree(rerollOutcome)) {
+                    desc += `\`(${this._parseDegree(rerollOutcome)})\``;
                 }
                 if (showDetails) {
                     desc += `||(${this._generateRollBreakdown(message.rolls[0])})||`;
@@ -566,8 +597,9 @@ export class MessageParserPF2e extends MessageParser {
     async _getEnrichmentOptions(message) {
         let originDoc;
 
-        if (message.flags?.pf2e?.origin?.uuid) {
-            originDoc = await fromUuid(message.flags.pf2e.origin.uuid);
+        const originUuid = getSystemFlag(message, 'origin.uuid');
+        if (originUuid) {
+            originDoc = await fromUuid(originUuid);
         }
         else if (message.speaker?.actor) {
             originDoc = game.actors.get(message.speaker.actor); //Fallback to speaker in case it's needed.
@@ -616,7 +648,7 @@ export class MessageParserPF2e extends MessageParser {
                     let desc = "";
                     title += `${originDoc.name} `;
                     if (itemTraits.rarity && itemTraits.rarity !== "common") {
-                        desc += `[${game.i18n.localize(CONFIG.PF2E.rarityTraits[itemTraits.rarity])}] `;
+                        desc += `[${game.i18n.localize(CONFIG.PF2E.rarityTraits[itemTraits.rarity])}] `; //SF2E uses CONFIG.PF2E. No need to replace.
                     }
                     itemTraits.value.forEach(itemTrait => {
                         desc += `[${game.i18n.localize(CONFIG.PF2E[`${itemType}Traits`][itemTrait])}] `;
