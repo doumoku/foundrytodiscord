@@ -826,7 +826,7 @@ export class MessageParser {
         roll.terms.forEach((term) => {
             let currentTermString = "";
             switch (true) {
-                case (foundry.dice && term instanceof foundry.dice.terms.DiceTerm):
+                case term instanceof foundry.dice.terms.DiceTerm:
                     let i = 1;
                     const notDieEmoji = function () {
                         if (term.faces && getDieEmoji(term.faces)) {
@@ -853,10 +853,10 @@ export class MessageParser {
                         currentTermString = ` \`${term.faces ? `d${term.faces}` : ""}[${currentTermString.trim()}]\``;
                     }
                     break;
-                case (foundry.dice && term instanceof foundry.dice.terms.FunctionTerm):
+                case term instanceof foundry.dice.terms.FunctionTerm:
                     currentTermString += term.result;
                     break;
-                case (foundry.dice && term instanceof foundry.dice.terms.PoolTerm) || term.hasOwnProperty("rolls"):
+                case term instanceof foundry.dice.terms.PoolTerm || term.hasOwnProperty("rolls"):
                     let poolRollCnt = 1;
                     term.rolls.forEach(poolRoll => {
                         currentTermString += ` ${this._generateRollBreakdown(poolRoll, true)}`;
@@ -866,10 +866,10 @@ export class MessageParser {
                         poolRollCnt++;
                     });
                     break;
-                case (foundry.dice && term instanceof foundry.dice.terms.OperatorTerm):
+                case term instanceof foundry.dice.terms.OperatorTerm:
                     currentTermString += ` ${term.operator}`;
                     break;
-                case (foundry.dice && term instanceof foundry.dice.terms.NumericTerm):
+                case term instanceof foundry.dice.terms.NumericTerm:
                     currentTermString += ` ${term.number}`
                     break;
                 case term.hasOwnProperty("term"):
