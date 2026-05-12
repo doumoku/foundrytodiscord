@@ -747,7 +747,7 @@ export class MessageParserPF2e extends MessageParser {
         roll.terms.forEach((term) => {
             let currentTermString = "";
             switch (true) {
-                case (foundry.dice && term instanceof foundry.dice.terms.DiceTerm) || term instanceof DiceTerm:
+                case term instanceof foundry.dice.terms.DiceTerm:
                     let i = 1;
                     if (!term.flavor.includes("persistent")) {
                         const notDieEmoji = function () {
@@ -765,7 +765,7 @@ export class MessageParserPF2e extends MessageParser {
                             } else if (dieResult.discarded || dieResult.rerolled) {
                                 tempTermString += `${swapOrNot(` ${dieResult.result}ˣ`, `[${getDieEmoji(term.faces, dieResult.result)}ˣ]`)}`;
                             }
-                            if (tempTermString !== "" && ((notDieEmoji && i < term.results.length) || (nextTerm && (roll.terms[termcount] && ((foundry.dice && !roll.terms[termcount] instanceof foundry.dice.terms.OperatorTerm) || !roll.terms[termcount] instanceof OperatorTerm))))) {
+                            if (tempTermString !== "" && ((notDieEmoji && i < term.results.length) || (nextTerm && (roll.terms[termcount] && !roll.terms[termcount] instanceof foundry.dice.terms.OperatorTerm)))) {
                                 tempTermString += " +";
                             }
                             currentTermString += tempTermString;
@@ -777,12 +777,12 @@ export class MessageParserPF2e extends MessageParser {
                     }
                     else {
                         currentTermString += `\`${term.expression}\``;
-                        if (nextTerm && (roll.terms[termcount] && ((foundry.dice && !roll.terms[termcount] instanceof foundry.dice.terms.OperatorTerm) || !roll.terms[termcount] instanceof OperatorTerm))) {
+                        if (nextTerm && (roll.terms[termcount] && ((!roll.terms[termcount] instanceof foundry.dice.terms.OperatorTerm)))) {
                             currentTermString += " +";
                         }
                     }
                     break;
-                case ((foundry.dice && term instanceof foundry.dice.terms.PoolTerm) || term instanceof PoolTerm) || term.hasOwnProperty("rolls"):
+                case term instanceof foundry.dice.terms.PoolTerm || term.hasOwnProperty("rolls"):
                     let poolRollCnt = 1;
                     term.rolls.forEach(poolRoll => {
                         currentTermString += ` ${this._generateRollBreakdown(poolRoll, true)}`;
@@ -792,10 +792,10 @@ export class MessageParserPF2e extends MessageParser {
                         poolRollCnt++;
                     });
                     break;
-                case (foundry.dice && term instanceof foundry.dice.terms.OperatorTerm) || term instanceof OperatorTerm:
+                case term instanceof foundry.dice.terms.OperatorTerm:
                     currentTermString += ` ${term.operator}`;
                     break;
-                case (foundry.dice && term instanceof foundry.dice.terms.NumericTerm) || term instanceof NumericTerm:
+                case term instanceof foundry.dice.terms.NumericTerm:
                     currentTermString += ` ${term.number}`
                     break;
                 case term.hasOwnProperty("operands"):
@@ -804,11 +804,9 @@ export class MessageParserPF2e extends MessageParser {
                     let j = 1;
                     terms.forEach(operand => {
                         newTerms.push(operand);
-                        // To be removed in update
-                        const OpTerm = foundry.dice ? foundry.dice.terms.OperatorTerm : OperatorTerm;
                         if (j < terms.length) {
                             j++;
-                            newTerms.push(new OpTerm({ operator: term.operator }));
+                            newTerms.push(new foundry.dice.terms.OperatorTerm({ operator: term.operator }));
                         }
                     })
                     currentTermString += ` ${this._generateRollBreakdown({ terms: newTerms }, true)}`;
