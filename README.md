@@ -6,6 +6,7 @@ A lightweight FoundryVTT module that sends all FoundryVTT messages to a Discord 
 
 **System Support:**
 - Pathfinder Second Edition
+- Starfinder Second Edition
 - Pathfinder First Edition
 - ProjectFU (Fabula Ultima)
 - Cosmere RPG 
