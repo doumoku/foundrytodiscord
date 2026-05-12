@@ -1,11 +1,17 @@
-# 4.0.0
+# 4.0.1
+
+- (pf2e) Fix roll breakdowns causing errors when attempting to send rolls.
+- (projectfu) Fixes some embed formatting.
+- (projectfu) Attempts to fix #64... again.
+
+## 4.0.0
 
 - Initial fixes and support for Foundry v14.
 - (cosmere-rpg) Added Plot Die (dp) to roll embeds.
 - Added support for Starfinder Second Edition.
 - Minor fixes.
 
-# 3.2.3
+## 3.2.3
 
 - (cosmere-rpg) Fix emojis for opportunities and complications.
 
