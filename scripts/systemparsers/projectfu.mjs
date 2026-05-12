@@ -47,7 +47,7 @@ export class MessageParserProjectFU extends MessageParser {
         let detailDescription = "";
 
         // First Tags
-        const allTagElements = Array.from(descriptionDiv.querySelectorAll('div.fu-tags'));
+        const allTagElements = Array.from(descriptionDiv.querySelectorAll('div.fu-tags, div.pfu-tags'));
         let tagText = "";
         if (allTagElements.length > 0) {
             tagText = await this.parseTagsFromElement(allTagElements[0]);
@@ -86,7 +86,10 @@ export class MessageParserProjectFU extends MessageParser {
         }
 
         for (const chatDesc of descriptionDiv.querySelectorAll('div.chat-desc')) {
-            chatDescription += chatDesc.innerHTML + "\n";
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = chatDesc.innerHTML;
+            tempDiv.querySelectorAll('.fu-check__result, .fu-check__outcome')?.forEach(el => el.remove()); //Processed later.
+            chatDescription += tempDiv.innerHTML + "\n";
         }
 
         for (const descBlock of descriptionDiv.querySelectorAll(`div.detail-desc:not([id="results"]):not(.difficulty)`)) {
@@ -94,6 +97,7 @@ export class MessageParserProjectFU extends MessageParser {
             detailDescription += descBlock.innerHTML + "\n";
         }
 
+        //OLD. Kept for older versions of PFU.
         const usingWeaponTitleDescLink = descriptionDiv.querySelector('div.title-desc a');
         const usingWeapon = usingWeaponTitleDescLink ? usingWeaponTitleDescLink.closest('div[data-order]') : null;
         if (usingWeapon) {
@@ -167,7 +171,7 @@ export class MessageParserProjectFU extends MessageParser {
             fields.push(...parseFieldsFromCheckElement(attrCheckElement))
             const resultElement = descriptionDiv.querySelector('.total');
             if (resultElement) {
-                const result = resultElement.querySelector(".endcap");
+                const result = resultElement.querySelector(".endcap, .fu-check__result-text");
                 const resultText = result.textContent.trim();
                 result.remove();
                 let value = `\`\`\`🎲 ${resultElement.textContent.trim()}`;
@@ -193,8 +197,15 @@ export class MessageParserProjectFU extends MessageParser {
             // Part 1: Accuracy
             if (accuracyElement) {
                 const accTitleElement = accuracyElement.querySelector('h2');
-                if (accTitleElement) {
+                if (accTitleElement && accTitleElement.textContent.trim() !== "") {
                     title = accTitleElement.textContent.trim();
+                }
+                else {
+                    const accHeaderElement = accuracyElement.querySelector('header');
+                    if(accHeaderElement){
+                        title = accHeaderElement.getAttribute('data-tooltip');
+                        console.log(title);
+                    }
                 }
             }
 
@@ -209,12 +220,15 @@ export class MessageParserProjectFU extends MessageParser {
             value = "\u200b";
             if (damageElement) {
                 const damTitleElement = damageElement.querySelector('h2');
-                if (damTitleElement) {
+                if (damTitleElement && damTitleElement.textContent.trim() !== "") {
                     title = damTitleElement.textContent.trim();
                 }
                 const damTotalElement = damageElement.querySelector('.damageType');
                 if (damTotalElement) {
                     value = `${dieIcon()}\`${damTotalElement.textContent.trim()} (${damTotalElement.querySelector('.endcap').getAttribute('data-tooltip')})\``
+                    if(title === "\u200b" || title === ""){ 
+                        title = damTotalElement.getAttribute('data-tooltip');
+                    }
                 }
             }
             fields.push({ name: title, value: value, inline: true });
@@ -313,7 +327,16 @@ export class MessageParserProjectFU extends MessageParser {
             description += `\n${detailDescription}`;
         }
 
-        return [{ title: titleDiv.textContent, description: description, fields: fields }];
+        // Title builder, for skills using a weapon.
+        const titleHeader = titleDiv.querySelector('h2');
+        let titleText = titleHeader?.textContent.trim() || titleDiv.textContent.trim() || "\u200b";
+        const usingItemDiv = titleHeader.nextElementSibling?.querySelector('a') ?? titleDiv.querySelector('h2 + a');
+        if (usingItemDiv) {
+            const attachedItem = usingItemDiv.getAttribute('data-tooltip');
+            titleText += ` (${attachedItem})`;
+        }
+
+        return [{ title: titleText, description: description, fields: fields }];
     }
 
     async parseTagsFromElement(tagElement) {
